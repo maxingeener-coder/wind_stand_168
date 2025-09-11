@@ -274,17 +274,21 @@ PCICR=(0<<PCIE2) | (1<<PCIE1) | (0<<PCIE0);
 PCMSK1=(0<<PCINT14) | (0<<PCINT13) | (0<<PCINT12) | (0<<PCINT11) | (0<<PCINT10) | (0<<PCINT9) | (1<<PCINT8);
 PCIFR=(0<<PCIF2) | (1<<PCIF1) | (0<<PCIF0);
 
-// USART initialization
+// USART initialization for ATmega168A/P
+// External crystal: 20 MHz
+// Baud Rate: 9600
 // Communication Parameters: 8 Data, 1 Stop, No Parity
-// USART Receiver: On
-// USART Transmitter: On
-// USART0 Mode: Asynchronous
-// USART Baud Rate: 115200
-UCSR0A=(0<<RXC0) | (0<<TXC0) | (0<<UDRE0) | (0<<FE0) | (0<<DOR0) | (0<<UPE0) | (0<<U2X0) | (0<<MPCM0);
-UCSR0B=(0<<RXCIE0) | (0<<TXCIE0) | (0<<UDRIE0) | (1<<RXEN0) | (1<<TXEN0) | (0<<UCSZ02) | (0<<RXB80) | (0<<TXB80);
-UCSR0C=(0<<UMSEL01) | (0<<UMSEL00) | (0<<UPM01) | (0<<UPM00) | (0<<USBS0) | (1<<UCSZ01) | (1<<UCSZ00) | (0<<UCPOL0);
-UBRR0H=0x00;
-UBRR0L=0x0A;
+
+UCSR0A = (0<<RXC0) | (0<<TXC0) | (0<<UDRE0) | (0<<FE0) | (0<<DOR0) | (0<<UPE0) | (0<<U2X0) | (0<<MPCM0);
+UCSR0B = (0<<RXCIE0) | (0<<TXCIE0) | (0<<UDRIE0) | (1<<RXEN0) | (1<<TXEN0) | (0<<UCSZ02) | (0<<RXB80) | (0<<TXB80);
+UCSR0C = (0<<UMSEL01) | (0<<UMSEL00) | (0<<UPM01) | (0<<UPM00) | (0<<USBS0) | (1<<UCSZ01) | (1<<UCSZ00) | (0<<UCPOL0);
+
+// Baud Rate calculation for 9600 baud at 20MHz
+// UBRR = (F_CPU / (16 * BAUD)) - 1
+// UBRR = (20000000 / (16 * 9600)) - 1 = (20000000 / 153600) - 1 = 130.208 - 1 = 129.208 ˜ 129
+
+UBRR0H = 0x00;
+UBRR0L = 0x81; // 129 decimal = 0x81 hexadecimal
 
 // Analog Comparator initialization
 // Analog Comparator: Off
@@ -388,13 +392,45 @@ AIN7=ADC7;
 
 
 CNT1++;      
-if (RS232==25) {RS232=0,
-
-printf("T_C_D0_D1_D2_D3_D4_V5_V24 %i %i %i %i %i %i %i %i %i \r\n " ,ECU_TEMP,ECU_CURRENT,DOUT0_CURR,DOUT1_CURR,DOUT2_CURR,DOUT3_CURR,DOUT4_CURR,BUS_5V,VCC );
-printf("DIN0..8                   %i %i %i %i %i %i %i %i %i \r\n " ,DIN0,DIN1,DIN2,DIN3,DIN4,DIN5,DIN6,DIN7,DIN8 );
-printf("AIN0..7                   %i %i %i %i %i %i %i %i    \r\n " ,AIN0,AIN1,AIN2,AIN3,AIN4,AIN5,AIN6,AIN7 );
-printf("DO56_DO78_BTN_CNT1        %i %i %i %i                \r\n " ,DOUT56STATE,DOUT78STATE,INTBTN,CNT1 );
-LED1=!LED1;
-};
-      }
+if (RS232==250) {
+    RS232=0;
+    
+    // ECU temp
+    printf("t4.txt=\"%i\"\xFF\xFF\xFF", ECU_TEMP);
+    
+    // ECU curr
+    printf("t1.txt=\"%i\"\xFF\xFF\xFF", ECU_CURRENT);
+    
+    // 5v
+    printf("t6.txt=\"%i\"\xFF\xFF\xFF", BUS_5V);
+    
+    // VCC
+    printf("t8.txt=\"%i\"\xFF\xFF\xFF", VCC);
+    
+    // DIN0-DIN8 checkbox c0-c8
+    printf("c0.val=%i\xFF\xFF\xFF", DIN0);
+    printf("c1.val=%i\xFF\xFF\xFF", DIN1);
+    printf("c2.val=%i\xFF\xFF\xFF", DIN2);
+    printf("c3.val=%i\xFF\xFF\xFF", DIN3);
+    printf("c4.val=%i\xFF\xFF\xFF", DIN4);
+    printf("c5.val=%i\xFF\xFF\xFF", DIN5);
+    printf("c6.val=%i\xFF\xFF\xFF", DIN6);
+    printf("c7.val=%i\xFF\xFF\xFF", DIN7);
+    printf("c8.val=%i\xFF\xFF\xFF", DIN8);
+    
+    // analog inp
+    printf("c9.val=%i\xFF\xFF\xFF", DOUT0_CURR > 0 ? 1 : 0);
+    printf("c10.val=%i\xFF\xFF\xFF", DOUT1_CURR > 0 ? 1 : 0);
+    printf("c11.val=%i\xFF\xFF\xFF", DOUT2_CURR > 0 ? 1 : 0);
+    printf("c12.val=%i\xFF\xFF\xFF", DOUT3_CURR > 0 ? 1 : 0);
+    printf("c13.val=%i\xFF\xFF\xFF", DOUT4_CURR > 0 ? 1 : 0);
+    printf("c14.val=%i\xFF\xFF\xFF", DOUT56STATE);
+    printf("c15.val=%i\xFF\xFF\xFF", DOUT78STATE);
+    printf("c16.val=%i\xFF\xFF\xFF", INTBTN);
+    
+    // temp
+    //printf("add s0,%i,255\xFF\xFF\xFF", ECU_TEMP);
+                
+    LED1=!LED1;
 }
+}}
