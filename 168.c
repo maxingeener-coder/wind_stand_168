@@ -392,20 +392,20 @@ AIN7=ADC7;
 
 
 CNT1++;      
-if (RS232==250) {
+if (RS232==50) {
     RS232=0;
     
     // ECU temp
     printf("t4.txt=\"%i\"\xFF\xFF\xFF", ECU_TEMP);
     
     // ECU curr
-    printf("t1.txt=\"%i\"\xFF\xFF\xFF", ECU_CURRENT);
+    printf("t8.txt=\"%i\"\xFF\xFF\xFF", ECU_CURRENT);
     
     // 5v
     printf("t6.txt=\"%i\"\xFF\xFF\xFF", BUS_5V);
     
     // VCC
-    printf("t8.txt=\"%i\"\xFF\xFF\xFF", VCC);
+    printf("t1.txt=\"%i\"\xFF\xFF\xFF", VCC);
     
     // DIN0-DIN8 checkbox c0-c8
     printf("c0.val=%i\xFF\xFF\xFF", DIN0);
@@ -416,20 +416,27 @@ if (RS232==250) {
     printf("c5.val=%i\xFF\xFF\xFF", DIN5);
     printf("c6.val=%i\xFF\xFF\xFF", DIN6);
     printf("c7.val=%i\xFF\xFF\xFF", DIN7);
-    printf("c8.val=%i\xFF\xFF\xFF", DIN8);
+    printf("c8.val=%i\xFF\xFF\xFF", DIN8);   
     
-    // analog inp
-    printf("c9.val=%i\xFF\xFF\xFF", DOUT0_CURR > 0 ? 1 : 0);
-    printf("c10.val=%i\xFF\xFF\xFF", DOUT1_CURR > 0 ? 1 : 0);
-    printf("c11.val=%i\xFF\xFF\xFF", DOUT2_CURR > 0 ? 1 : 0);
-    printf("c12.val=%i\xFF\xFF\xFF", DOUT3_CURR > 0 ? 1 : 0);
-    printf("c13.val=%i\xFF\xFF\xFF", DOUT4_CURR > 0 ? 1 : 0);
-    printf("c14.val=%i\xFF\xFF\xFF", DOUT56STATE);
-    printf("c15.val=%i\xFF\xFF\xFF", DOUT78STATE);
-    printf("c16.val=%i\xFF\xFF\xFF", INTBTN);
+  
+      // AINPUT
+    printf("j0.val=%i\xFF\xFF\xFF", AIN0/10); 
+    printf("j1.val=%i\xFF\xFF\xFF", AIN1/10);  
+    printf("j2.val=%i\xFF\xFF\xFF", AIN2/10);  
+    printf("j3.val=%i\xFF\xFF\xFF", AIN3/10);  
+    printf("j4.val=%i\xFF\xFF\xFF", AIN4/10);  
+    printf("j5.val=%i\xFF\xFF\xFF", AIN5/10);  
+    printf("j6.val=%i\xFF\xFF\xFF", AIN6/10);  
+    printf("j7.val=%i\xFF\xFF\xFF", AIN7/10);    
+     
+    printf("c17.val=%i\xFF\xFF\xFF", DOUT56STATE);
+    printf("c16.val=%i\xFF\xFF\xFF",DOUT56STATE);  
+    printf("c18.val=%i\xFF\xFF\xFF",INTBTN);   
     
-    // temp
-    //printf("add s0,%i,255\xFF\xFF\xFF", ECU_TEMP);
+    printf("t32.txt=\"%i\"\xFF\xFF\xFF",CNT1);
+    
+     printf("t34.txt=\"%i\"\xFF\xFF\xFF",1);         
+    
                 
     LED1=!LED1;
 }
